@@ -1,4 +1,4 @@
-proj_name <- ""
+proj_name <- "irdpr"
 
 ## OUTSIDE Project
 # Initialize and clone repo (using SSH)
@@ -13,7 +13,7 @@ system(paste0("gsutil -m cp -r gs://jmh/", proj_name, " ."))
 
 ## WITHIN Project
 # For setup - change repo to SSH
-system(paste0("git remote set-url origin git@github.com:jasonmhoule/", proj_name, ".git"), intern = TRUE)
+system(paste0("git remote set-url origin git@github.com:jasonmhoule/", proj_name, ".git"))
 
 # Resync files to bucket (creates folder if needed; ignores .git)
 system(paste0("gsutil -m rsync -rd -x .git . gs://jmh/", proj_name))

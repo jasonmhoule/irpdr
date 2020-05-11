@@ -11,4 +11,10 @@ RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.
 RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
 RUN sudo apt-get update && sudo apt-get install -y google-cloud-sdk
 
+RUN install2.r --error \ 
+    -r 'http://cran.rstudio.com' \
+    pdftools \ 
+## clean up
+    && rm -rf /tmp/downloaded_packages/ /tmp/*.rds
+    
 COPY files/gs_loader.R /home/script.R
