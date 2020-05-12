@@ -15,6 +15,8 @@ RUN sudo apt-get update && sudo apt-get install -y google-cloud-sdk
 
 RUN install2.r --error \ 
     -r 'http://cran.rstudio.com' \
+    tidyverse \
+    tidytext \
     pdftools \ 
 ## clean up
     && rm -rf /tmp/downloaded_packages/ /tmp/*.rds
