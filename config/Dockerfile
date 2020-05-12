@@ -1,4 +1,4 @@
-FROM rocker/rstudio:3.6.3
+FROM rocker/tidyverse:3.6.3
 
 RUN apt-get update && apt-get install -y \
     curl \
@@ -15,7 +15,6 @@ RUN sudo apt-get update && sudo apt-get install -y google-cloud-sdk
 
 RUN install2.r --error \ 
     -r 'http://cran.rstudio.com' \
-    tidyverse \
     tidytext \
     pdftools \ 
 ## clean up
