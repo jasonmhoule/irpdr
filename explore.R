@@ -24,3 +24,4 @@ pdftools::pdf_convert("xcel1.pdf", pages = retire_pgs,
 
 
 # Maybe to check out for pdf highlighting: https://github.com/Swechhya/pdfUtils
+# tf-idf: https://amitlevinson.com/post/learning-tfidf-with-political-theorists/
