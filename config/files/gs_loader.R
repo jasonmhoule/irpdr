@@ -1,4 +1,4 @@
-proj_name <- "irdpr"
+proj_name <- "irpdr"
 
 ## OUTSIDE Project
 # Initialize and clone repo (using SSH)
