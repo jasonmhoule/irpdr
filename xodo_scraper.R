@@ -1,7 +1,7 @@
 library(pdftools)
-library(curl)
+# library(curl)
 library(tidyverse)
-library(tidytext)
+# library(tidytext)
 
 info <- pdf_info("5758-annotations.pdf")
 pda <- pdf_data("5758-annotations.pdf")
