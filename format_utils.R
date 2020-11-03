@@ -30,14 +30,14 @@ parse_tiddler <- function(tiddler) {
   names(kk) <- nms
   kk
   
-  list(fields = kk, text = txt)
+  list(fields = kk, txt = txt)
 }
 
 # g <- parse_tiddler("Once Upon a Time.tid")
 # g$fields
-# g$text
+# g$txt
 
-build_tiddler <- function(title, text, fields = list(), tags = NULL) {
+build_tiddler <- function(title, txt, fields = list(), tags = NULL) {
   
   fields$title = title
   if(!("type" %in% names(fields))) {
@@ -51,15 +51,30 @@ build_tiddler <- function(title, text, fields = list(), tags = NULL) {
   
   header <- paste(names(fields),fields, sep = ": ")
   
-  writeLines(c(header, "", text), paste0(title,".tid"))
+  writeLines(c(header, "", txt), paste0(title,".tid"))
   
 }
 
-# txt <- "# It was a dark and stormy night
-# 
-# - There was no wood.
-# - There was no fire.
-#   - Everyone was afraid."
-# 
-# build_tiddler("Once Upon a Time", txt, fields = list(one = 1, typee = "threes"), tags = c("one","two"))
+txt1 <- "# It was a dark and stormy night
+
+- There was no wood.
+- There was no fire.
+  - Everyone was afraid.
+
+## First part
+
+Everyone was afraid.
+
+> They said there was nothing to be afraid of.
+
+[[Getting Things Done]]
+
+## Second part
+
+- Eggs
+- Milk
+  - Skim
+- Bread"
+
+# build_tiddler("Once Upon a Time", txt1, fields = list(one = 1, typee = "threes"), tags = c("one","two"))
 
