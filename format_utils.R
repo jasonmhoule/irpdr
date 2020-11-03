@@ -2,7 +2,18 @@ library(tidyverse)
 
 # This is a set of functions for formatting notes into tiddlers for upload to Locus
 
-parse_markdown_note <- function(note, tags = list(), fields = list()) {
+parse_markdown_text <- function(txt, tags = NULL, fields = list()) {
+  
+  tibble(txt = strsplit(txt1, "\n")[[1]]) %>% 
+    mutate(leading = gsub("([\\#]*) .*","\\1",txt),
+           header = grepl("#",leading),
+           prehead = lead(header),
+           posthead = lag(header),
+           level = nchar(leading)*header) %>% 
+    group_by(header) %>% 
+    mutate(grp = if_else(level == 0,NA_character_, as.character(row_number()))) %>% 
+    ungroup() %>% 
+    fill(grp)
   
 }
 
