@@ -2,18 +2,124 @@ library(tidyverse)
 
 # This is a set of functions for formatting notes into tiddlers for upload to Locus
 
-parse_markdown_text <- function(txt, tags = NULL, fields = list()) {
+parent <- function(lvl) {
   
-  tibble(txt = strsplit(txt1, "\n")[[1]]) %>% 
-    mutate(leading = gsub("([\\#]*) .*","\\1",txt),
+  lvlseq <- seq_along(lvl)
+  out <- vector("integer", max(lvlseq))
+  lvl <- c(0, lvl)
+  
+  for(i in lvlseq) {
+    out[i] <- max(which(lvl[1:(i+1)] < lvl[i+1])) - 1
+  }
+  
+  return(out)
+}
+
+add_ids_at_level <- function(df, level) {
+  
+  lvlarg <- level
+  
+  df_lkp <- df %>% 
+    select(parent = grp, parent_id = final_id)
+  
+  df <- df %>% 
+    left_join(df_lkp, by = "parent") %>% 
+    mutate(final_id = if_else(level == lvlarg, paste0(parent_id,lvl_id), final_id)) %>% 
+    select(-parent_id)
+  
+  return(df)
+  
+}
+
+add_final_id <- function(df) {
+  
+  df$final_id <- NA_character_
+  
+  df <- df %>% 
+    mutate(final_id = if_else(level == 1, lvl_id, final_id))
+  
+  # Recurse for 2 to max
+  maxlvl <- max(df$level)
+  
+  if(maxlvl > 1) {
+    for (i in 2:maxlvl) {
+      
+      df <- add_ids_at_level(df, i)
+      
+    }
+  } 
+  
+  return(df)
+}
+
+parse_markdown_text <- function(type, title, txt, tags = NULL, fields = list()) {
+  
+  ##[] Need to build the main/header tiddler!
+  ##[] Also add a flow where there are no headers - note is just a single text block, perhaps with tags
+  ##[] Handle convention for adding tags and fields... should combine what's entered as args with any header text so that we can specify these in the markdown too
+  
+  # type <- "LT"
+  # title <- "This is my Title"
+  # txt <- test_txt
+  main_tid_title <- paste(paste0(type,":"), title)
+  
+  # Initial extract and organization of all text
+  
+  xy <- tibble(txt = strsplit(txt, "\n")[[1]]) %>% 
+    mutate(txt2 = trimws(str_remove_all(txt, "#")),
+           leading = gsub("([\\#]*) .*","\\1",txt),
            header = grepl("#",leading),
            prehead = lead(header),
            posthead = lag(header),
            level = nchar(leading)*header) %>% 
     group_by(header) %>% 
-    mutate(grp = if_else(level == 0,NA_character_, as.character(row_number()))) %>% 
+    mutate(grp = if_else(level == 0,NA_integer_, row_number())) %>% 
     ungroup() %>% 
     fill(grp)
+  
+  xy_txt <- xy %>% 
+    filter(!header, (is.na(prehead) | !prehead), !posthead) %>% 
+    group_by(grp) %>% 
+    mutate(tid_txt = paste(txt, collapse = "\n")) %>% 
+    select(grp, tid_txt) %>% 
+    distinct() %>% 
+    mutate(tid_txt = paste(tid_txt,"\n\n{{||viewLiterature}}"))
+  
+  # Create tiddler headings and hierarchy
+  
+  heads <- xy %>% 
+    filter(level > 0)
+  
+  heads$parent <- parent(heads$level)
+  
+  heads <- heads %>%  
+    group_by(parent) %>% 
+    mutate(lvl_id = str_pad(as.character(dplyr::row_number(parent)), 2, "left", "0")) %>% 
+    ungroup() %>% 
+    add_final_id() %>% 
+    mutate(tid_title = paste(main_tid_title, final_id, txt2))
+  
+  tag_lkp <- heads %>% 
+    select(parent = grp, parent_tag = tid_title) %>% 
+    bind_rows(tibble(parent = 0, parent_tag = main_tid_title))
+  
+  heads_full <- heads %>% 
+    left_join(tag_lkp, by = "parent") %>% 
+    left_join(xy_txt, by = "grp")
+
+  heads_full$fields <- list("caption" = heads$txt2, "level" = heads$level) %>% transpose()
+  
+  for(i in nrows(heads_full)) {
+    
+    r = heads_full[i,]
+    
+    build_tiddler(title = r$tid_title,
+                  txt = r$tid_txt,
+                  fields = r$fields,
+                  tags = r$parent_tag
+                    )
+    
+  }
   
 }
 
@@ -48,7 +154,7 @@ parse_tiddler <- function(tiddler) {
 # g$fields
 # g$txt
 
-build_tiddler <- function(title, txt, fields = list(), tags = NULL) {
+build_tiddler <- function(title, txt, fields = list(), tags = NULL, outfolder = NULL) {
   
   fields$title = title
   if(!("type" %in% names(fields))) {
@@ -66,7 +172,7 @@ build_tiddler <- function(title, txt, fields = list(), tags = NULL) {
   
 }
 
-txt1 <- "# It was a dark and stormy night
+test_txt <- "# It was a dark and stormy night
 
 - There was no wood.
 - There was no fire.
@@ -85,7 +191,25 @@ Everyone was afraid.
 - Eggs
 - Milk
   - Skim
-- Bread"
+- Bread
+
+### Third
+
+- Check
+
+# One
+
+Hey there
+
+## Two one
+
+- Two
+  - Two two
+
+## Two one two
+
+> 'Hey there in the 2-1-2' "
 
 # build_tiddler("Once Upon a Time", txt1, fields = list(one = 1, typee = "threes"), tags = c("one","two"))
 
+parse_markdown_text("TT","My new Tiddler",test_txt)
