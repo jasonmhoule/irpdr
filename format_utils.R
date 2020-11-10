@@ -190,7 +190,11 @@ build_tiddler <- function(title, txt, fields = list(), tags = NULL, outfolder = 
   if(!("created" %in% names(fields))) {
     fields$created = paste0(gsub("-|:| ", "", Sys.time()),"000")
   }
-  fields$tags = paste(tags, collapse = ", ")
+  if("tags" %in% names(fields)) {
+    fields$tags <- paste(c(fields$tags, tags), collapse = ", ")
+  } else if(!is.null(tags)) {
+    fields$tags <- paste(tags, collapse = ", ")
+  }
   
   header <- paste(names(fields),fields, sep = ": ")
   
@@ -252,4 +256,4 @@ test_txt2 <- paste0(tt2, test_txt)
 
 # build_tiddler("Once Upon a Time", txt1, fields = list(one = 1, typee = "threes"), tags = c("one","two"))
 
-parse_markdown_text("TT","My new Tiddler",test_txt, outfolder = "test_out")
+# parse_markdown_text("TT","My new Tiddler",test_txt, outfolder = "test_out")
