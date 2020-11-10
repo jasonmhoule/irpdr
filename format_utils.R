@@ -56,16 +56,11 @@ parse_markdown_text <- function(type, title, txt, tags = NULL, fields = list(), 
   
   ##[] Also add a flow where there are no section headers - note is just a single text block, perhaps with tags
   ##[] Handle convention for adding tags and fields... should combine what's entered as args with any header text so that we can specify these in the markdown too
-  
-  type <- "LT"
-  title <- "This is my Title"
-  txt <- test_txt2
-  tags <- NULL
-  fields <- list()
-  main_tid_title <- paste(paste0(type,":"), title)
-  outfolder <- "test_out"
+  ##   Use parse_tiddler for the top content to read this all in?
+  ##[] Tags must be added in space-separated [[ ]] to account for spaces, punctuation, etc.
   
   # Initial extract and organization of all text
+  main_tid_title <- paste(paste0(type,":"), title)
   
   xy <- tibble(txt = strsplit(txt, "\n")[[1]]) %>% 
     mutate(txt2 = trimws(str_remove_all(txt, "#")),
@@ -121,8 +116,6 @@ parse_markdown_text <- function(type, title, txt, tags = NULL, fields = list(), 
   } else {
     g0_txt <- "{{||viewLiteratureHeader}}"
   }
-  
-  print(g0_txt)
   
   build_tiddler(title = main_tid_title,
                 txt = g0_txt,
@@ -256,4 +249,5 @@ test_txt2 <- paste0(tt2, test_txt)
 
 # build_tiddler("Once Upon a Time", txt1, fields = list(one = 1, typee = "threes"), tags = c("one","two"))
 
-# parse_markdown_text("TT","My new Tiddler",test_txt, outfolder = "test_out")
+parse_markdown_text("LT","This is my Title",test_txt2, outfolder = "test_out")
+
