@@ -109,13 +109,16 @@ parse_markdown_text <- function(type, title, txt, tags = NULL, fields = list(), 
 
   heads_full$fields <- list("caption" = heads$txt2, "level" = heads$level) %>% transpose()
   
-  for(i in nrow(heads_full)) {
+  print(heads_full)
+  
+  for(i in 1:nrow(heads_full)) {
     
     r <- heads_full[i,]
+    print(r$tid_title)
     
-    build_tiddler(title = r$tid_title,
+    build_tiddler(title = paste(r$final_id, r$txt2),
                   txt = r$tid_txt,
-                  fields = r$fields,
+                  fields = r$fields[[1]],
                   tags = r$parent_tag,
                   outfolder = outfolder
                     )
@@ -169,7 +172,6 @@ build_tiddler <- function(title, txt, fields = list(), tags = NULL, outfolder = 
     fields$created = paste0(gsub("-|:| ", "", Sys.time()),"000")
   }
   fields$tags = paste(tags, collapse = ", ")
-  print(fields)
   
   header <- paste(names(fields),fields, sep = ": ")
   
