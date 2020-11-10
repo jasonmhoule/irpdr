@@ -54,7 +54,6 @@ add_final_id <- function(df) {
 
 parse_markdown_text <- function(type, title, txt, tags = NULL, fields = list(), outfolder) {
   
-  ##[] Header tiddler needs to end in {{||viewLiteratureHeader}} tag
   ##[] Also add a flow where there are no section headers - note is just a single text block, perhaps with tags
   ##[] Handle convention for adding tags and fields... should combine what's entered as args with any header text so that we can specify these in the markdown too
   
@@ -79,10 +78,10 @@ parse_markdown_text <- function(type, title, txt, tags = NULL, fields = list(), 
     mutate(grp = if_else(level == 0,NA_integer_, row_number())) %>% 
     ungroup() %>% 
     fill(grp) %>% 
-    replace_na(list("grp" = 0))
+    replace_na(list("grp" = 0, "prehead" = FALSE, "posthead" = FALSE))
   
   xy_txt <- xy %>% 
-    filter(!header, (is.na(prehead) | !prehead), !posthead) %>% 
+    filter(!header, !prehead, !posthead) %>% 
     group_by(grp) %>% 
     mutate(tid_txt = paste(txt, collapse = "\n")) %>% 
     select(grp, tid_txt) %>% 
@@ -118,7 +117,7 @@ parse_markdown_text <- function(type, title, txt, tags = NULL, fields = list(), 
   
   # Header tiddler
   if(nrow(grp0) > 0) {
-    g0_txt <- grp0$tid_txt
+    g0_txt <- grp0$tid_txt %>% gsub("viewLiterature","viewLiteratureHeader", .)
   } else {
     g0_txt <- "{{||viewLiteratureHeader}}"
   }
@@ -242,6 +241,14 @@ Hey there
 ## Two one two
 
 > 'Hey there in the 2-1-2' "
+
+tt2 <- "Test one two
+
+Header text
+
+"
+
+test_txt2 <- paste0(tt2, test_txt)
 
 # build_tiddler("Once Upon a Time", txt1, fields = list(one = 1, typee = "threes"), tags = c("one","two"))
 
