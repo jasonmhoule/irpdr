@@ -79,7 +79,8 @@ parse_markdown_text <- function(type, title, txt, tags = NULL, fields = list(), 
     group_by(header) %>% 
     mutate(grp = if_else(level == 0,NA_integer_, row_number())) %>% 
     ungroup() %>% 
-    fill(grp)
+    fill(grp) %>% 
+    replace_na(list("grp" = 0))
   
   xy_txt <- xy %>% 
     filter(!header, (is.na(prehead) | !prehead), !posthead) %>% 
@@ -113,14 +114,30 @@ parse_markdown_text <- function(type, title, txt, tags = NULL, fields = list(), 
 
   heads_full$fields <- list("caption" = heads$txt2, "level" = heads$level) %>% transpose()
   
-  print(heads_full)
+  grp0 <- xy_txt %>% 
+    filter(grp == 0)
+  
+  # Header tiddler
+  if(nrow(grp0) > 0) {
+    g0_txt <- grp0$tid_txt
+  } else {
+    g0_txt <- "{{||viewLiteratureHeader}}"
+  }
+  
+  print(g0_txt)
+  
+  build_tiddler(title = main_tid_title,
+                txt = g0_txt,
+                fields = fields,
+                tags = tags,
+                outfolder = outfolder
+  )
   
   for(i in 1:nrow(heads_full)) {
     
     r <- heads_full[i,]
-    print(r$tid_title)
     
-    build_tiddler(title = paste(r$final_id, r$txt2),
+    build_tiddler(title = paste(main_tid_title, r$final_id, r$txt2),
                   txt = r$tid_txt,
                   fields = r$fields[[1]],
                   tags = r$parent_tag,
