@@ -52,7 +52,7 @@ add_final_id <- function(df) {
   return(df)
 }
 
-parse_markdown_text <- function(type, title, txt, tags = NULL, fields = list()) {
+parse_markdown_text <- function(type, title, txt, tags = NULL, fields = list(), outfolder) {
   
   ##[] Need to build the main/header tiddler!
   ##[] Also add a flow where there are no headers - note is just a single text block, perhaps with tags
@@ -116,7 +116,8 @@ parse_markdown_text <- function(type, title, txt, tags = NULL, fields = list()) 
     build_tiddler(title = r$tid_title,
                   txt = r$tid_txt,
                   fields = r$fields,
-                  tags = r$parent_tag
+                  tags = r$parent_tag,
+                  outfolder = outfolder
                     )
     
   }
