@@ -154,7 +154,11 @@ parse_tiddler <- function(tiddler) {
 # g$fields
 # g$txt
 
-build_tiddler <- function(title, txt, fields = list(), tags = NULL, outfolder = NULL) {
+build_tiddler <- function(title, txt, fields = list(), tags = NULL, outfolder = "tiddler_out") {
+  
+  if(!dir.exists(outfolder)) {
+    dir.create(outfolder)
+  }
   
   fields$title = title
   if(!("type" %in% names(fields))) {
@@ -168,7 +172,7 @@ build_tiddler <- function(title, txt, fields = list(), tags = NULL, outfolder = 
   
   header <- paste(names(fields),fields, sep = ": ")
   
-  writeLines(c(header, "", txt), paste0(title,".tid"))
+  writeLines(c(header, "", txt), paste0(outfolder,"/",title,".tid"))
   
 }
 
