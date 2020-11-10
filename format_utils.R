@@ -55,13 +55,17 @@ add_final_id <- function(df) {
 parse_markdown_text <- function(type, title, txt, tags = NULL, fields = list(), outfolder) {
   
   ##[] Need to build the main/header tiddler!
-  ##[] Also add a flow where there are no headers - note is just a single text block, perhaps with tags
+  ##[] Header tiddler needs to end in {{||viewLiteratureHeader}} tag
+  ##[] Also add a flow where there are no section headers - note is just a single text block, perhaps with tags
   ##[] Handle convention for adding tags and fields... should combine what's entered as args with any header text so that we can specify these in the markdown too
   
-  # type <- "LT"
-  # title <- "This is my Title"
-  # txt <- test_txt
+  type <- "LT"
+  title <- "This is my Title"
+  txt <- test_txt2
+  tags <- NULL
+  fields <- list()
   main_tid_title <- paste(paste0(type,":"), title)
+  outfolder <- "test_out"
   
   # Initial extract and organization of all text
   
