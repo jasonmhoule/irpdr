@@ -154,9 +154,12 @@ parse_tiddler <- function(tiddler) {
   nms <- fields %>% transpose() %>% `[[`(1) %>% unlist()
   kk <- fields %>% transpose() %>% `[[`(2)
   
+  # Extract tags from space-separated [[ ]] into character vectors
   if("tags" %in% nms) {
     ind <- which("tags" == nms)
-    kk[ind] <- strsplit(kk[[ind]], ", ")
+    kk[ind] <- kk[[ind]] %>% 
+      str_remove_all("^\\[\\[|\\]\\]$") %>% 
+      str_split("\\]\\] \\[\\[")
   }
   
   kk
