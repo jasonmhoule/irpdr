@@ -109,9 +109,9 @@ parse_markdown_text <- function(type, title, txt, tags = NULL, fields = list(), 
 
   heads_full$fields <- list("caption" = heads$txt2, "level" = heads$level) %>% transpose()
   
-  for(i in nrows(heads_full)) {
+  for(i in nrow(heads_full)) {
     
-    r = heads_full[i,]
+    r <- heads_full[i,]
     
     build_tiddler(title = r$tid_title,
                   txt = r$tid_txt,
@@ -217,4 +217,4 @@ Hey there
 
 # build_tiddler("Once Upon a Time", txt1, fields = list(one = 1, typee = "threes"), tags = c("one","two"))
 
-parse_markdown_text("TT","My new Tiddler",test_txt)
+parse_markdown_text("TT","My new Tiddler",test_txt, outfolder = "test_out")
