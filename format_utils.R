@@ -164,7 +164,7 @@ build_tiddler <- function(title, txt, fields = list(), tags = NULL, outfolder = 
     dir.create(outfolder)
   }
   
-  fields$title = title
+  fields$title <- title
   if(!("type" %in% names(fields))) {
     fields$type = "text/x-markdown"
   }
@@ -175,11 +175,17 @@ build_tiddler <- function(title, txt, fields = list(), tags = NULL, outfolder = 
   
   header <- paste(names(fields),fields, sep = ": ")
   
-  writeLines(c(header, "", txt), paste0(outfolder,"/",title,".tid"))
+  wintitle <- gsub(":", "_", title)
+  
+  writeLines(c(header, "", txt), paste0(outfolder,"/",wintitle,".tid"))
   
 }
 
-test_txt <- "# It was a dark and stormy night
+test_txt <- "There was a tiddler I knew. [[Podcast|http://www.google.com]] without transcript.
+
+Most importantly are a few points made in the introduction.
+
+# It was a dark and stormy night
 
 - There was no wood.
 - There was no fire.
