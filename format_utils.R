@@ -261,6 +261,8 @@ Header text
 
 test_txt2 <- paste0(tt2, test_txt)
 
+# [] Formalize test suite
+
 # build_tiddler("Once Upon a Time", txt1, fields = list(one = 1, typee = "threes"), tags = c("one","two"))
 # build_tiddler("Once Upon a Time", test_txt2, fields = list(one = 1, typee = "threes"), tags = c("one",ttxt))
 # pt2 <- parse_tiddler("newout/Twice Upon a Time.tid")
