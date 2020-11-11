@@ -170,11 +170,9 @@ parse_tiddler <- function(tiddler) {
   list(fields = kk, txt = txt)
 }
 
-# g <- parse_tiddler("Once Upon a Time.tid")
-# g$fields
-# g$txt
-
 build_tiddler <- function(title, txt, fields = list(), tags = NULL, outfolder = "tiddler_out") {
+  
+  # Note: If tags are added as arguments or as part of fields$tags, they must be in a character vector
   
   if(!dir.exists(outfolder)) {
     dir.create(outfolder)
@@ -253,9 +251,7 @@ test_txt2 <- paste0(tt2, test_txt)
 
 # build_tiddler("Once Upon a Time", txt1, fields = list(one = 1, typee = "threes"), tags = c("one","two"))
 # build_tiddler("Once Upon a Time", test_txt2, fields = list(one = 1, typee = "threes"), tags = c("one",ttxt))
-pt2 <- parse_tiddler("newout/Twice Upon a Time.tid")
-build_tiddler("Thrice Upon a Time", pt$txt, pt2$fields, "Added Tag", out = "newout")
+# pt2 <- parse_tiddler("newout/Twice Upon a Time.tid")
+# build_tiddler("Thrice Upon a Time", pt$txt, pt2$fields, "Added Tag", out = "newout")
 # parse_markdown_text("LT","This is my Title",test_txt2, outfolder = "test_out")
-
-ttxt <- "[[To Reformat]] Inbox [[Happy Days]]"
 
