@@ -157,9 +157,10 @@ parse_tiddler <- function(tiddler) {
   # Extract tags from space-separated [[ ]] into character vectors
   if("tags" %in% nms) {
     ind <- which("tags" == nms)
-    kk[ind] <- kk[[ind]] %>% 
-      str_remove_all("^\\[\\[|\\]\\]$") %>% 
-      str_split("\\]\\] \\[\\[")
+    kk[[ind]] <- tibble(k = str_split(kk[[ind]], "\\]\\]|\\[\\[")[[1]]) %>% 
+      mutate(k2 = trimws(k)) %>% 
+      filter(str_length(k2) > 0) %>% 
+      `$`(k2)
   }
   
   kk
@@ -187,9 +188,9 @@ build_tiddler <- function(title, txt, fields = list(), tags = NULL, outfolder = 
     fields$created = paste0(gsub("-|:| ", "", Sys.time()),"000")
   }
   if("tags" %in% names(fields)) {
-    fields$tags <- paste(c(fields$tags, tags), collapse = ", ")
+    fields$tags <- paste0("[[", c(fields$tags, tags), "]]", collapse = " ")
   } else if(!is.null(tags)) {
-    fields$tags <- paste(tags, collapse = ", ")
+    fields$tags <- paste0("[[", tags, "]]", collapse = " ")
   }
   
   header <- paste(names(fields),fields, sep = ": ")
@@ -251,6 +252,10 @@ Header text
 test_txt2 <- paste0(tt2, test_txt)
 
 # build_tiddler("Once Upon a Time", txt1, fields = list(one = 1, typee = "threes"), tags = c("one","two"))
+# build_tiddler("Once Upon a Time", test_txt2, fields = list(one = 1, typee = "threes"), tags = c("one",ttxt))
+pt2 <- parse_tiddler("newout/Twice Upon a Time.tid")
+build_tiddler("Thrice Upon a Time", pt$txt, pt2$fields, "Added Tag", out = "newout")
+# parse_markdown_text("LT","This is my Title",test_txt2, outfolder = "test_out")
 
-parse_markdown_text("LT","This is my Title",test_txt2, outfolder = "test_out")
+ttxt <- "[[To Reformat]] Inbox [[Happy Days]]"
 
