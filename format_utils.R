@@ -55,9 +55,6 @@ add_final_id <- function(df) {
 parse_markdown_text <- function(type, title, txt, tags = NULL, fields = list(), outfolder) {
   
   ##[] Also add a flow where there are no section headers - note is just a single text block, perhaps with tags
-  ##[] Handle convention for adding tags and fields... should combine what's entered as args with any header text so that we can specify these in the markdown too
-  ##   Use parse_tiddler for the top content to read this all in?
-  ##[] Tags must be added in space-separated [[ ]] to account for spaces, punctuation, etc.
   
   # Initial extract and organization of all text
   main_tid_title <- paste(paste0(type,":"), title)
@@ -117,13 +114,27 @@ parse_markdown_text <- function(type, title, txt, tags = NULL, fields = list(), 
     g0_txt <- "{{||viewLiteratureHeader}}"
   }
   
-  build_tiddler(title = main_tid_title,
-                txt = g0_txt,
-                fields = fields,
-                tags = tags,
-                outfolder = outfolder
-  )
-  
+  # ID if the markdown starts with fields
+  if(grepl("^[[:alnum:]]*:",g0_txt)) {
+    
+    writeLines(g0_txt,"temp.tid")
+    pt <- parse_tiddler("temp.tid")
+    file.remove("temp.tid")
+    
+    build_tiddler(title = main_tid_title, # Title trumps the title from any field
+                  txt = pt$txt,
+                  fields = c(pt$fields, fields), # If duplicate fields, script tumps text (TW5 takes only the last value)
+                  tags = tags, # Any tags added this way will merge, not deduplicate
+                  outfolder = outfolder)
+  } else {
+    # Default header tiddler
+    build_tiddler(title = main_tid_title,
+                  txt = g0_txt,
+                  fields = fields,
+                  tags = tags,
+                  outfolder = outfolder)
+  }
+
   for(i in 1:nrow(heads_full)) {
     
     r <- heads_full[i,]
@@ -142,7 +153,6 @@ parse_markdown_text <- function(type, title, txt, tags = NULL, fields = list(), 
 parse_tiddler <- function(tiddler) {
   
   tidlines <- readLines(tiddler)
-  writeLines(tidlines)
   
   cutoff <- min(which(tidlines == ""))
   
@@ -241,7 +251,9 @@ Hey there
 
 > 'Hey there in the 2-1-2' "
 
-tt2 <- "Test one two
+tt2 <-
+"tags: Inbox [[New Tag]]
+new_field: 18
 
 Header text
 
@@ -253,5 +265,5 @@ test_txt2 <- paste0(tt2, test_txt)
 # build_tiddler("Once Upon a Time", test_txt2, fields = list(one = 1, typee = "threes"), tags = c("one",ttxt))
 # pt2 <- parse_tiddler("newout/Twice Upon a Time.tid")
 # build_tiddler("Thrice Upon a Time", pt$txt, pt2$fields, "Added Tag", out = "newout")
-# parse_markdown_text("LT","This is my Title",test_txt2, outfolder = "test_out")
+# parse_markdown_text("LT","This is my Second Title",test_txt2, fields = list("title" = "twisty twizzlers","new_field" = 19), tags = c("New Tag 1","New Tag 2"), outfolder = "test_out")
 
